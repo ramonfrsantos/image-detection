@@ -38,7 +38,7 @@ public class ImageDetectionController {
 		//caminho arquivo de entrada
 		String inputFilePath = "./test_temp." + model.getFormato();
 		
-		// --- converte o base64 enviado no body da requisição para arquivo ---
+		// --- converte o base64 enviado no body da requisicao para arquivo ---
 		byte[] data = org.apache.tomcat.util.codec.binary.Base64.decodeBase64(model.getBase64());
 		
 		try (OutputStream imageInFile = new FileOutputStream(inputFilePath)) {
@@ -53,44 +53,44 @@ public class ImageDetectionController {
         
         //-----
 		
-        // lê o arquivo de entrada e converte para o formato Mat
+        // le o arquivo de entrada e converte para o formato Mat
 		Mat src = Imgcodecs.imread(inputFilePath);
 		
-		// caminho do arquivo resultado do treinamento, com especificações do modelo treinado
+		// caminho do arquivo resultado do treinamento, com especificacoes do modelo treinado
 		String xmlFile = "./cascade.xml";
 		
 		CascadeClassifier cc = new CascadeClassifier(xmlFile);
 		
 		MatOfRect imgDetection = new MatOfRect();
 		
-		// detecta se a imagem de entrada da match com o modelo
+		// detecta se a imagem de entrada da 'match' com o modelo
 		cc.detectMultiScale(src, imgDetection);
 		
-		// se acha alguma semelhança, seta o boolean para true
+		// se acha alguma semelhanca, seta o boolean para true
 		if(imgDetection.toArray().length > 0) {
 			imageDetected = true;
 		}
 		
 		System.out.println("Image detected: " + imageDetected);
 		
-		// cria retangulos para indicar as semelhanças na imagem
+		// cria retangulos para indicar as semelhancas na imagem
 		for(Rect rect: imgDetection.toArray()) {
 			Imgproc.rectangle(src, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y+rect.height), new Scalar(0,0,255), 3);
 		}
 		
-		// --- escreve na imagem de saída a imagem pós-análise
+		// --- escreve na imagem de saida a imagem pos-analise
 		String outputFilePath = "./test_out." + model.getFormato();
 		
 		Imgcodecs.imwrite(outputFilePath, src);
 		//----
 		
-		// --- converte o arquivo de saída em base64 para retorno
+		// --- converte o arquivo de saida em base64 para retorno
         String base64OutputFile = "";
 		
 		File outputFile = new File(outputFilePath);
 		
         try (FileInputStream imageOutFile = new FileInputStream(outputFile)) {
-            // Reading a file from file system
+            // lendo arquivo do sistema
             byte fileData[] = new byte[(int) outputFile.length()];
             imageOutFile.read(fileData);
             base64OutputFile = Base64.getEncoder().encodeToString(fileData);
@@ -107,8 +107,7 @@ public class ImageDetectionController {
 	    
 		System.out.println("Program finished!\n");
 		
-		// retorna a imagem criada pós-análise	    		
+		// retorna a imagem criada pos-analise	    		
 		return new ImageResponseDTO(base64OutputFile, model.getFormato());		
 	}
-	
 }
